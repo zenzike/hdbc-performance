@@ -1,0 +1,5 @@
+HDBC-performance
+================
+
+This is a simple performance measuring application to benchmark HDBC backend
+drivers.
