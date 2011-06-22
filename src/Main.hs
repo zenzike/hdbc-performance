@@ -83,8 +83,6 @@ benchSelect :: IConnection conn => conn -> Int -> Benchmark
 benchSelect conn n = bench "Select" $ nfIO $ do
   quickQuery' conn "SELECT * FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
   commit conn
-  run conn "DELETE FROM testSelect" []
-  commit conn
 
 teardownSelect :: IConnection conn => conn -> IO ()
 teardownSelect conn = do
