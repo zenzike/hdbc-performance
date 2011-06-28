@@ -82,25 +82,25 @@ setupSelect conn n = do
 
 benchSelect :: IConnection conn => conn -> Int -> Benchmark
 benchSelect conn n = bench "Select" $ nfIO $ do
-  quickQuery' conn "SELECT * FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
+  quickQuery conn "SELECT * FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
   commit conn
 
 benchSelectInt :: IConnection conn => conn -> Int -> Benchmark
-benchSelectInt conn n = bench "Select" $ nfIO $ do
-  vss <- quickQuery' conn "SELECT v1 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
+benchSelectInt conn n = bench "SelectInt" $ nfIO $ do
+  vss <- quickQuery conn "SELECT v1 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
   commit conn
   return $ map (\[v] -> fromSql v :: Int) vss
 
 
 benchSelectDouble :: IConnection conn => conn -> Int -> Benchmark
-benchSelectDouble conn n = bench "Select" $ nfIO $ do
-  vss <- quickQuery' conn "SELECT v2 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
+benchSelectDouble conn n = bench "SelectDouble" $ nfIO $ do
+  vss <- quickQuery conn "SELECT v2 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
   commit conn
   return $ map (\[v] -> fromSql v :: Double) vss
 
 benchSelectString :: IConnection conn => conn -> Int -> Benchmark
-benchSelectString conn n = bench "Select" $ nfIO $ do
-  vss <- quickQuery' conn "SELECT v3 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
+benchSelectString conn n = bench "SelectString" $ nfIO $ do
+  vss <- quickQuery conn "SELECT v3 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
   commit conn
   return $ map (\[v] -> fromSql v :: String) vss
 
