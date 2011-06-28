@@ -8,7 +8,6 @@ import Database.HDBC
 import Database.HDBC.ODBC
 import Database.HDBC.PostgreSQL
 
-import System.Console.CmdArgs
 import Control.Monad (replicateM, forM, liftM)
 
 main :: IO ()
@@ -38,7 +37,9 @@ main = do
 benchBackend :: IConnection conn => String -> conn -> Benchmark
 benchBackend backend conn = bgroup backend
   [ benchInsert conn 1000
-  , benchSelect conn 10000
+  , benchSelectInt conn 10000
+  , benchSelectDouble conn 10000
+  , benchSelectString conn 10000
   ]
 
 --------------------
@@ -83,6 +84,25 @@ benchSelect :: IConnection conn => conn -> Int -> Benchmark
 benchSelect conn n = bench "Select" $ nfIO $ do
   quickQuery' conn "SELECT * FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
   commit conn
+
+benchSelectInt :: IConnection conn => conn -> Int -> Benchmark
+benchSelectInt conn n = bench "Select" $ nfIO $ do
+  vss <- quickQuery' conn "SELECT v1 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
+  commit conn
+  return $ map (\[v] -> fromSql v :: Int) vss
+
+
+benchSelectDouble :: IConnection conn => conn -> Int -> Benchmark
+benchSelectDouble conn n = bench "Select" $ nfIO $ do
+  vss <- quickQuery' conn "SELECT v2 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
+  commit conn
+  return $ map (\[v] -> fromSql v :: Double) vss
+
+benchSelectString :: IConnection conn => conn -> Int -> Benchmark
+benchSelectString conn n = bench "Select" $ nfIO $ do
+  vss <- quickQuery' conn "SELECT v3 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
+  commit conn
+  return $ map (\[v] -> fromSql v :: String) vss
 
 teardownSelect :: IConnection conn => conn -> IO ()
 teardownSelect conn = do
