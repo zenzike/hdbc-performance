@@ -46,7 +46,7 @@ Now that PostgreSQL is up and running, we can start adding a connection using
 ODBC.
 First make sure that you have unixodbc-dev installed on your linux machine:
 
-    sudo aptitude install unixodbc unixodbc-dev unixodbc-bin
+    sudo aptitude install unixodbc unixodbc-dev unixodbc-bin odbc-postgresql
 
 Getting ODBC to work with postgresql is simple when you know how: you must
 make ODBC aware of your database drivers, and you need to supply some
@@ -65,6 +65,14 @@ Here's a diagram from the ODBCConfig tool that describes how the process works:
 I can recommend looking at the [unixODBC documentation][3] to get things set up.
 Use the `ODBCConfig` tool to get your ODBC connection set up, and use
 the `DataManager` to verify that the connection works.
+
+To get the postgresql drivers to be configured by ODBC, you'll need to
+copy the configuration settings across:
+
+    sudo sh -c "cat /usr/share/psqlodbc/odbcinst.ini.template >> /etcodbcinst.ini"
+
+Then use ODBCConfig to add a new User DSN using PostgreSQL Unicode and
+a name of `HDBC`.
 
 Next install HDBC-odbc from cabal:
 
