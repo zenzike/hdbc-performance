@@ -9,6 +9,7 @@ import Database.HDBC.ODBC
 import Database.HDBC.PostgreSQL
 
 import Control.Monad (replicateM, forM, liftM)
+import Debug.Trace
 
 main :: IO ()
 main = do
@@ -17,18 +18,18 @@ main = do
   connODBC       <- connectODBC "DSN=HDBC"
 
   -- Setup
-  setupInsert connODBC
-  setupSelect connODBC 10000
+  setupInsert connPostgreSQL
+  setupSelect connPostgreSQL 10000
 
   -- Benchmark
   defaultMain
-    [ benchBackend "odbc"       connPostgreSQL
-    , benchBackend "postgresql" connODBC
+    [ benchBackend "odbc"       connODBC
+    , benchBackend "postgresql" connPostgreSQL
     ]
 
   -- Teardown
-  teardownInsert connODBC
-  teardownSelect connODBC
+  teardownInsert connPostgreSQL
+  teardownSelect connPostgreSQL
 
   -- Disconnect
   disconnect connPostgreSQL
@@ -38,6 +39,7 @@ benchBackend :: IConnection conn => String -> conn -> Benchmark
 benchBackend backend conn = bgroup backend
   [ benchInsert conn 1000
   , benchSelectInt conn 10000
+  -- , benchSelectInt32 conn 10000
   , benchSelectDouble conn 10000
   , benchSelectString conn 10000
   ]
@@ -72,11 +74,11 @@ setupSelect :: IConnection conn => conn -> Int -> IO ()
 setupSelect conn n = do
   run conn
     "CREATE TABLE testSelect (v1 INTEGER, v2 FLOAT, v3 CHAR(64))" []
-  forM [1 .. n] $ \x ->
+  replicateM n $
     run conn "INSERT INTO testSelect (v1, v2, v3) VALUES (?, ?, ?)"
-      [ SqlInt32 (fromIntegral x)
-      , SqlDouble (fromIntegral x)
-      , SqlString (show x)
+      [ SqlInt32 1
+      , SqlDouble 1.0
+      , SqlString "test"
       ]
   commit conn
 
@@ -87,20 +89,26 @@ benchSelect conn n = bench "Select" $ nfIO $ do
 
 benchSelectInt :: IConnection conn => conn -> Int -> Benchmark
 benchSelectInt conn n = bench "SelectInt" $ nfIO $ do
-  vss <- quickQuery conn "SELECT v1 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
-  commit conn
-  return $ map (\[v] -> fromSql v :: Int) vss
+  vss <- quickQuery' conn "SELECT v1 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
+  if ((sum . map (\[v] -> fromSql v :: Int)) vss /= n)
+    then error "benchSelectInt: Unexpected sum!"
+    else return $ sum . map (\[v] -> fromSql v :: Int) $ vss
 
+benchSelectInt32 :: IConnection conn => conn -> Int -> Benchmark
+benchSelectInt32 conn n = bench "SelectInt32" $ nfIO $ do
+  vss <- quickQuery' conn "SELECT v1 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
+  commit conn
+  return $ map (\[SqlInt32 v] -> v) vss
 
 benchSelectDouble :: IConnection conn => conn -> Int -> Benchmark
 benchSelectDouble conn n = bench "SelectDouble" $ nfIO $ do
-  vss <- quickQuery conn "SELECT v2 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
+  vss <- quickQuery' conn "SELECT v2 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
   commit conn
   return $ map (\[v] -> fromSql v :: Double) vss
 
 benchSelectString :: IConnection conn => conn -> Int -> Benchmark
 benchSelectString conn n = bench "SelectString" $ nfIO $ do
-  vss <- quickQuery conn "SELECT v3 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
+  vss <- quickQuery' conn "SELECT v3 FROM testSelect LIMIT ?" [SqlInt32 (fromIntegral n)]
   commit conn
   return $ map (\[v] -> fromSql v :: String) vss
 
