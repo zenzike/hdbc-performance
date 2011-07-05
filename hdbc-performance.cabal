@@ -51,15 +51,14 @@ Executable hdbc-performance
   -- Packages needed in order to build this package.
   Build-depends:
       base >= 4 && < 5
+    , criterion >= 0.5.0.10
     , HDBC >= 2.2.7.0
     , HDBC-postgresql >= 2.2.3.0
     , HDBC-odbc >= 2.2.3.0
-    , criterion >= 0.5.0.10
+    , time >= 1.2.0.3
 
   GHC-options:
       -rtsopts
-      -prof
-      -auto-all
   -- Modules not exported by this package.
   -- Other-modules:       
   
