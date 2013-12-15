@@ -71,16 +71,14 @@ Here's a diagram from the ODBCConfig tool that describes how the process works:
     Database System
 
 I can recommend looking at the [unixODBC documentation][3] to get things set up.
-Use the `ODBCConfig` tool to get your ODBC connection set up, and use
-the `DataManager` to verify that the connection works.
 
 To get the postgresql drivers to be configured by ODBC, you'll need to
 copy the configuration settings across:
 
     sudo sh -c "cat /usr/share/psqlodbc/odbcinst.ini.template >> /etc/odbcinst.ini"
 
-Then use ODBCConfig to add a new User DSN using PostgreSQL Unicode and
-a name of `HDBC`.
+Then use the `ODBCCreateDataSourceQ4` tool to add a new User DSN using PostgreSQL Unicode and
+a name of `HDBC`. Check that it's there using `ODBCManageDataSourcesQ4`.
 
 Next install HDBC-odbc from cabal:
 
