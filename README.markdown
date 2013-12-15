@@ -12,7 +12,7 @@ The first step is to get PostgreSQL up and running. Next we'll need to set up a
 database for the ODBC test. I'll be using PostgreSQL, which can be installed
 using:
 
-    sudo aptitude install postgresql postgresql-contrib postgresql-bin libpg-dev
+    sudo aptitude install postgresql postgresql-contrib
 
 More detailed instructions can be found on [Linode Library][1], and there's
 plenty of information about how postgresql works in the [Slicehost Articles][2].
