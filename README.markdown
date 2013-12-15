@@ -77,8 +77,27 @@ copy the configuration settings across:
 
     sudo sh -c "cat /usr/share/psqlodbc/odbcinst.ini.template >> /etc/odbcinst.ini"
 
-Then use the `ODBCCreateDataSourceQ4` tool to add a new User DSN using PostgreSQL Unicode and
-a name of `HDBC`. Check that it's there using `ODBCManageDataSourcesQ4`.
+Then use the `ODBCCreateDataSourceQ4` or the `ODBCManageDataSourcesQ4` tool, and ensure that:
+
+    Name:     HDBC
+    Driver:   PostgreSQL Unicode
+    Database: hdbc-test
+    Username: hdbc
+    Password: password
+
+For our purposes it's fine for the DSN (Data Source Name) to be set a User rather than System wide one.
+
+To check you can connect via ODBC, use the `isql` tool:
+
+    $ isql -v HDBC
+    +---------------------------------------+
+    | Connected!                            |
+    |                                       |
+    | sql-statement                         |
+    | help [tablename]                      |
+    | quit                                  |
+    |                                       |
+    +---------------------------------------+
 
 Next install HDBC-odbc from cabal:
 
