@@ -17,11 +17,19 @@ using:
 More detailed instructions can be found on [Linode Library][1], and there's
 plenty of information about how postgresql works in the [Slicehost Articles][2].
 
+If you want to just perform a quick test, then the following should get you
+making a database and creating a new user:
+
+    $ su - postgres
+    $ psql
+
+Once in `psql`, we'll execute some queries to set things up.    
 For the purposes of this preformance analysis, we'll create a user called
 `hdbc`, and a database `hdbc-test`:
 
     CREATE ROLE hdbc WITH LOGIN ENCRYPTED PASSWORD 'password';
-    CREATE DATABASE hdbc-test WITH OWNER hdbc ENCODING 'utf8';
+    CREATE DATABASE "hdbc-test" WITH OWNER hdbc ENCODING 'utf8';
+    \q
 
 Now we need to install the HDBC backend for postgresql:
 
