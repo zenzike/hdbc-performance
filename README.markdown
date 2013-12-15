@@ -77,7 +77,7 @@ the `DataManager` to verify that the connection works.
 To get the postgresql drivers to be configured by ODBC, you'll need to
 copy the configuration settings across:
 
-    sudo sh -c "cat /usr/share/psqlodbc/odbcinst.ini.template >> /etcodbcinst.ini"
+    sudo sh -c "cat /usr/share/psqlodbc/odbcinst.ini.template >> /etc/odbcinst.ini"
 
 Then use ODBCConfig to add a new User DSN using PostgreSQL Unicode and
 a name of `HDBC`.
